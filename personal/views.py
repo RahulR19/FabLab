@@ -14,6 +14,7 @@ def reserve(request):
     if request.POST:
         form = ReserveForm(request.POST)
         if form.is_valid():
+            request.session['roll'] = form.cleaned_data['Rollno']
             form.save()
         print(form)
         print(request.POST)
@@ -38,8 +39,10 @@ def cancel(request):
 def items(request):
     if request.POST:
         print(request.POST)
-        Reserve.objects.filter(Instrument="No Instrument Selected").update(Instrument=request.POST.get("Instrument"))
-        return HttpResponseRedirect('I1.html')
+        rollno = request.session.get("roll")
+        if rollno:
+            Reserve.objects.filter(Rollno=rollno).update(Instrument=request.POST.get("Instrument"))
+            return HttpResponseRedirect('I1.html')
     return render(request, 'personal/I.html')
 
 
